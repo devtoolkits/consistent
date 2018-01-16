@@ -82,7 +82,7 @@ func TestGetSingle(t *testing.T) {
 			t.Logf("error: %q", err)
 			return false
 		}
-		t.Logf("s = %q, y = %q", s, y)
+		//t.Logf("s = %q, y = %q", s, y)
 		return y == "abcdefg"
 	}
 	if err := quick.Check(f, nil); err != nil {
@@ -96,9 +96,9 @@ type gtest struct {
 }
 
 var gmtests = []gtest{
-	{"ggg", "abcdefg"},
-	{"hhh", "opqrstu"},
-	{"iiiii", "hijklmn"},
+	{"ggg", "hijklmn"},
+	{"hhh", "abcdefg"},
+	{"iii", "opqrstu"},
 }
 
 func TestGetMultiple(t *testing.T) {
@@ -128,7 +128,7 @@ func TestGetMultipleQuick(t *testing.T) {
 			t.Logf("error: %q", err)
 			return false
 		}
-		t.Logf("s = %q, y = %q", s, y)
+		//t.Logf("s = %q, y = %q", s, y)
 		return y == "abcdefg" || y == "hijklmn" || y == "opqrstu"
 	}
 	if err := quick.Check(f, nil); err != nil {
@@ -137,15 +137,15 @@ func TestGetMultipleQuick(t *testing.T) {
 }
 
 var rtestsBefore = []gtest{
-	{"ggg", "abcdefg"},
-	{"hhh", "opqrstu"},
-	{"iiiii", "hijklmn"},
+	{"ggg", "hijklmn"},
+	{"hhh", "abcdefg"},
+	{"iii", "opqrstu"},
 }
 
 var rtestsAfter = []gtest{
-	{"ggg", "abcdefg"},
-	{"hhh", "opqrstu"},
-	{"iiiii", "opqrstu"},
+	{"ggg", "hijklmn"},
+	{"hhh", "abcdefg"},
+	{"iii", "hijklmn"},
 }
 
 func TestGetMultipleRemove(t *testing.T) {
@@ -162,7 +162,7 @@ func TestGetMultipleRemove(t *testing.T) {
 			t.Errorf("%d. got %q, expected %q before rm", i, result, v.out)
 		}
 	}
-	x.Remove("hijklmn")
+	x.Remove("opqrstu")
 	for i, v := range rtestsAfter {
 		result, err := x.Get(v.in)
 		if err != nil {
@@ -186,7 +186,7 @@ func TestGetMultipleRemoveQuick(t *testing.T) {
 			t.Logf("error: %q", err)
 			return false
 		}
-		t.Logf("s = %q, y = %q", s, y)
+		//t.Logf("s = %q, y = %q", s, y)
 		return y == "abcdefg" || y == "hijklmn"
 	}
 	if err := quick.Check(f, nil); err != nil {
@@ -206,11 +206,11 @@ func TestGetTwo(t *testing.T) {
 	if a == b {
 		t.Errorf("a shouldn't equal b")
 	}
-	if a != "abcdefg" {
-		t.Errorf("wrong a: %q", a)
+	if a != "hijklmn" {
+		t.Errorf("wrong b: %q", a)
 	}
-	if b != "hijklmn" {
-		t.Errorf("wrong b: %q", b)
+	if b != "abcdefg" {
+		t.Errorf("wrong a: %q", b)
 	}
 }
 
@@ -328,10 +328,10 @@ func TestGetNLess(t *testing.T) {
 	if len(members) != 2 {
 		t.Errorf("expected 2 members instead of %d", len(members))
 	}
-	if members[0] != "abcdefg" {
+	if members[0] != "hijklmn" {
 		t.Errorf("wrong members[0]: %q", members[0])
 	}
-	if members[1] != "hijklmn" {
+	if members[1] != "abcdefg" {
 		t.Errorf("wrong members[1]: %q", members[1])
 	}
 }
@@ -730,7 +730,7 @@ func TestConcurrentGetSet(t *testing.T) {
 				if err != nil {
 					t.Error(err)
 				}
-				if a != "def" && a != "vwx" {
+				if a != "pqr" && a != "ghi" {
 					t.Errorf("got %s, expected abc", a)
 				}
 				time.Sleep(time.Duration(rand.Intn(10)) * time.Millisecond)

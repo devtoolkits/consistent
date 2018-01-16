@@ -18,14 +18,15 @@
 //
 // Read more about consistent hashing on wikipedia:  http://en.wikipedia.org/wiki/Consistent_hashing
 //
-package consistent // import "stathat.com/c/consistent"
+package consistent
 
 import (
 	"errors"
-	"hash/crc32"
 	"sort"
 	"strconv"
 	"sync"
+
+	"github.com/spaolacci/murmur3"
 )
 
 type uints []uint32
@@ -236,12 +237,7 @@ func (c *Consistent) GetN(name string, n int) ([]string, error) {
 }
 
 func (c *Consistent) hashKey(key string) uint32 {
-	if len(key) < 64 {
-		var scratch [64]byte
-		copy(scratch[:], key)
-		return crc32.ChecksumIEEE(scratch[:len(key)])
-	}
-	return crc32.ChecksumIEEE([]byte(key))
+	return murmur3.Sum32([]byte(key))
 }
 
 func (c *Consistent) updateSortedHashes() {
